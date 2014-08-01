@@ -1,2 +1,4 @@
 .env
+*.Rproj*
 node_modules
+.Rproj.user
