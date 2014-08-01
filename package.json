@@ -1,0 +1,25 @@
+{
+  "name": "open-rail-performance-index",
+  "version": "0.0.1",
+  "description": "TBD",
+  "main": "arrivalsMonitor.js",
+  "dependencies": {
+    "async": "^0.9.0",
+    "stompit": "^0.18.1",
+    "underscore": "^1.6.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Digital-Contraptions-Imaginarium/open-rail-performance-index.git"
+  },
+  "author": "Gianfranco Cecconi <gc1a13@soton.ac.uk>",
+  "license": "Creative Commons BY-SA 4.0 International",
+  "bugs": {
+    "url": "https://github.com/Digital-Contraptions-Imaginarium/open-rail-performance-index/issues"
+  },
+  "homepage": "https://github.com/Digital-Contraptions-Imaginarium/open-rail-performance-index"
+}
