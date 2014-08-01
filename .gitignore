@@ -1,4 +1,5 @@
 .env
+*.Rhistory
 *.Rproj*
 node_modules
 .Rproj.user
