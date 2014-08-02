@@ -97,6 +97,7 @@ var writeQueue = async.queue(function (jsonContent, callback) {
             if (!uploadStream) {
                 createNewFile(function (err) {
                     var csvHeader = sortedKeys.map(function (key) { return JSON.stringify(key); }).join(",");
+                    if (process.env.DEBUG === 'true') console.log(csvHeader);
                     uploadStream.write(csvHeader, callback);
                 });
             } else {
@@ -106,7 +107,7 @@ var writeQueue = async.queue(function (jsonContent, callback) {
         // do the actual writing
         function (callback) {
             lastRecordWritten = now;
-            // process.stdout.write(".");
+            if (process.env.DEBUG === 'true') console.log(sortedValues);
             uploadStream.write("\n" + sortedValues, callback);               
         }
     ], callback);
