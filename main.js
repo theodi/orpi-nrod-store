@@ -61,12 +61,9 @@ var createNewFile = function (callback) {
                 "StorageClass": 'REDUCED_REDUNDANCY',
             },
             function (err, newUploadStream) {
-                if (err) {
-                    callback(err);
-                } else {
-                    uploadStream = newUploadStream;
-                    callback(null);
-                }
+                if (err) throw err;
+                uploadStream = newUploadStream;
+                callback(null);
             }
         );
 }
