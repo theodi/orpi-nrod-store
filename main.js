@@ -156,7 +156,4 @@ var run = function () {
     });
 }
 
-// console.write(Object.keys("cippa"));
-// console.log(typeof({ cippa: 3 }));
-// console.log(flattenObject({ cippa: 3, lippa: { sippa: 2, guppa: 1 } }));
 run();
