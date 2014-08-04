@@ -118,33 +118,40 @@ process.once('SIGTERM', function () {
     disconnectAtNextOpportunity = true;
 });
 
+var saveCurrentFileAndDisconnect = function (callback) {
+    uploadStream.end(null, null, function (err) {
+        client.disconnect(callback || function () { });
+    });
+}
+
 var run = function () {
     stompit.connect(CONNECTION_PARAMETERS, function (err, client) {
         if (err) throw err;
         client.subscribe(SUBSCRIPTION_PARAMETERS, function (err, message) {
-            if (err) throw err;
-            var content = '',
-                chunk;
-            message.on('readable', function () {
-                    while (null !== (chunk = message.read())) { content += chunk; }
-                });
-            message.on('end', function () {
-                if (!disconnectAtNextOpportunity) {
-                    message.ack();
-                    JSON.parse(content)
-                        .filter(function (message) {
-                            return (message.body.event_type === 'ARRIVAL') || (message.body.event_type === 'DEPARTURE');
-                        })
-                        .forEach(function (message) {
-                            write(message);
-                        })
-                    content = '';
-                } else {
-                    uploadStream.end(null, null, function (err) {
-                        client.disconnect();
+            if (err) {
+                saveCurrentFileAndDisconnect(function () { throw err; });
+            } else {
+                var content = '',
+                    chunk;
+                message.on('readable', function () {
+                        while (null !== (chunk = message.read())) { content += chunk; }
                     });
-                }
-            });
+                message.on('end', function () {
+                    if (!disconnectAtNextOpportunity) {
+                        message.ack();
+                        JSON.parse(content)
+                            .filter(function (message) {
+                                return (message.body.event_type === 'ARRIVAL') || (message.body.event_type === 'DEPARTURE');
+                            })
+                            .forEach(function (message) {
+                                write(message);
+                            })
+                        content = '';
+                    } else {
+                        saveCurrentFileAndDisconnect();
+                    }
+                });
+            }
         });
     });
 }
