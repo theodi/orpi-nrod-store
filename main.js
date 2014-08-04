@@ -23,7 +23,8 @@ var // https://github.com/caolan/async
     // http://underscorejs.org/
     _ = require('underscore');
 
-var uploadStream = null,
+var client = null,
+    uploadStream = null,
     lastRecordWritten = null, 
     disconnectAtNextOpportunity = false;
 
@@ -125,8 +126,9 @@ var saveCurrentFileAndDisconnect = function (callback) {
 }
 
 var run = function () {
-    stompit.connect(CONNECTION_PARAMETERS, function (err, client) {
+    stompit.connect(CONNECTION_PARAMETERS, function (err, _client) {
         if (err) throw err;
+        client = _client;
         client.subscribe(SUBSCRIPTION_PARAMETERS, function (err, message) {
             if (err) {
                 saveCurrentFileAndDisconnect(function () { throw err; });
