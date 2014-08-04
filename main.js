@@ -141,7 +141,10 @@ var run = function () {
                         message.ack();
                         JSON.parse(content)
                             .filter(function (message) {
-                                return (message.body.event_type === 'ARRIVAL') || (message.body.event_type === 'DEPARTURE');
+                                return (
+                                    (message.body.event_type === 'ARRIVAL') || 
+                                    (message.body.event_type === 'DEPARTURE')
+                                );
                             })
                             .forEach(function (message) {
                                 write(message);
