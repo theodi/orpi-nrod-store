@@ -46,7 +46,7 @@ var flattenObject = function (o, prefix) {
 }
 
 var dateToFilename = function (d) {
-    return "arrivals_" + d.getFullYear() + (d.getMonth() < 9 ? '0' : '') + (d.getMonth() + 1) + (d.getDate() < 10 ? '0' : '') + d.getDate() + (d.getHours() < 10 ? '0' : '') + d.getHours() + (d.getMinutes() < 10 ? '0' : '') + d.getMinutes() + (d.getSeconds() < 10 ? '0' : '') + d.getSeconds() + ".csv";
+    return d.getFullYear() + "/" + (d.getMonth() < 9 ? '0' : '') + (d.getMonth() + 1) + "/" + (d.getDate() < 10 ? '0' : '') + d.getDate() + "/arrivals_" + d.getFullYear() + (d.getMonth() < 9 ? '0' : '') + (d.getMonth() + 1) + (d.getDate() < 10 ? '0' : '') + d.getDate() + (d.getHours() < 10 ? '0' : '') + d.getHours() + (d.getMinutes() < 10 ? '0' : '') + d.getMinutes() + (d.getSeconds() < 10 ? '0' : '') + d.getSeconds() + ".csv";
 }
 
 var createNewFile = function (callback) {
