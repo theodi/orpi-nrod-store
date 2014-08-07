@@ -162,8 +162,9 @@ var run = function () {
                         JSON.parse(content)
                             .filter(function (message) {
                                 return (
-                                    (message.body.event_type === 'ARRIVAL') || 
-                                    (message.body.event_type === 'DEPARTURE')
+                                    (message.body.toc_id !== '0') &&
+                                    ((message.body.event_type === 'ARRIVAL') || 
+                                    (message.body.event_type === 'DEPARTURE'))
                                 );
                             })
                             .forEach(function (message) {
