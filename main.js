@@ -9,6 +9,7 @@ var CONNECTION_PARAMETERS = {
             }
         },
     SUBSCRIPTION_PARAMETERS = {
+            // was /topic/TRAIN_MVT_ALL_TOC /topic/TRAIN_MVT_PASSENGER_TOC'
             'destination': '/topic/TRAIN_MVT_ALL_TOC',
             'ack': 'client-individual',
             'activemq.subscriptionName': ((process.env.DEBUG !== 'true') ? 'prod-' + process.env.NROD_USERNAME : undefined),
@@ -120,9 +121,22 @@ process.once('SIGTERM', function () {
 });
 
 var saveCurrentFileAndDisconnect = function (callback) {
-    uploadStream.end(null, null, function (err) {
-        client.disconnect(callback || function () { });
-    });
+
+    var clientDisconnect = function (err) {
+        // the callback is not called if the client is not connected!
+        client.disconnect(err, function (err) {
+            (callback || function () { })(err);
+        });
+    }
+
+    if (uploadStream) {
+        uploadStream.end(null, null, function (err) {
+            clientDisconnect(err);
+        });
+    } else {
+        console.log("I am here 3");
+        clientDisconnect(null);
+    }
 }
 
 var run = function () {
@@ -131,7 +145,11 @@ var run = function () {
         client = _client;
         client.subscribe(SUBSCRIPTION_PARAMETERS, function (err, message) {
             if (err) {
-                saveCurrentFileAndDisconnect(function () { throw err; });
+                saveCurrentFileAndDisconnect(function () { 
+                    // note I am ignoring the err returned from 
+                    // saveCurrentFileAndDisconnect intentionally
+                    throw err; 
+                });
             } else {
                 var content = '',
                     chunk;
