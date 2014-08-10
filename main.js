@@ -190,4 +190,4 @@ var run = function () {
     });
 }
 
-run();
+setTimeout(run, 5000);
