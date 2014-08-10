@@ -198,4 +198,4 @@ var run = function () {
     });
 }
 
-run();
+setTimeout(run, 10000);
