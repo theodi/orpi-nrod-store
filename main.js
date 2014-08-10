@@ -168,7 +168,8 @@ var run = function () {
                                     // to identify real, in-service passengers 
                                     // trains without matching the record
                                     // against the schedule. This information is
-                                    // not in the NROD wiki!
+                                    // not in the NROD wiki! The train classes
+                                    // are described at http://en.wikipedia.org/wiki/Train_reporting_number#Train_classes 
                                     && (message.header.source_system_id === 'TRUST')  
                                     && _.contains(['1', '2', '9'], message.body.train_id.substring(2, 3))  
                                     // Not interested in other events than
