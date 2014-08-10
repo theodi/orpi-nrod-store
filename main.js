@@ -17,6 +17,7 @@ var CONNECTION_PARAMETERS = {
 var // https://github.com/caolan/async
     async = require('async'),
     // https://github.com/gdaws/node-stomp
+    // NOTE: for some reason stompit 'inhibits' JavaScript's 'throw', check https://github.com/gdaws/node-stomp/issues/7
     stompit = require('stompit'),
     // https://github.com/nathanpeck/s3-upload-stream
     Uploader = require('s3-upload-stream').Uploader,
@@ -62,7 +63,10 @@ var createNewFile = function (callback) {
                 "StorageClass": 'REDUCED_REDUNDANCY',
             },
             function (err, newUploadStream) {
-                if (err) throw err;
+                if (err) {
+                    console.log("ERROR: " + err.message);
+                    process.exit(1);
+                } 
                 uploadStream = newUploadStream;
                 callback(null);
             }
@@ -140,14 +144,18 @@ var saveCurrentFileAndDisconnect = function (callback) {
 
 var run = function () {
     stompit.connect(CONNECTION_PARAMETERS, function (err, _client) {
-        if (err) throw err;
+        if (err) {
+            console.log("ERROR: " + err.message);
+            process.exit(1);
+        } 
         client = _client;
         client.subscribe(SUBSCRIPTION_PARAMETERS, function (err, message) {
             if (err) {
                 saveCurrentFileAndDisconnect(function () { 
                     // note I am ignoring the err returned from 
                     // saveCurrentFileAndDisconnect intentionally
-                    throw err; 
+                    console.log("ERROR: " + err.message);
+                    process.exit(1);
                 });
             } else {
                 var content = '',
