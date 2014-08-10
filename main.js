@@ -9,7 +9,6 @@ var CONNECTION_PARAMETERS = {
             }
         },
     SUBSCRIPTION_PARAMETERS = {
-            // was /topic/TRAIN_MVT_ALL_TOC /topic/TRAIN_MVT_PASSENGER_TOC'
             'destination': '/topic/TRAIN_MVT_ALL_TOC',
             'ack': 'client-individual',
             'activemq.subscriptionName': ((process.env.DEBUG !== 'true') ? 'prod-' + process.env.NROD_USERNAME : undefined),
