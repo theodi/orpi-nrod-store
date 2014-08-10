@@ -64,13 +64,24 @@ var createNewFile = function (callback) {
             },
             function (err, newUploadStream) {
                 if (err) {
-                    console.log("ERROR: " + err.message);
+                    console.log("ERROR creating the new log file on S3: " + err.message);
                     process.exit(1);
-                } 
+                }   
                 uploadStream = newUploadStream;
-                callback(null);
+                callback(err);
             }
         );
+}
+
+var closeCurrentFile = function (callback) {
+    uploadStream.end(null, null, function (err) {
+        if (err) {
+            console.log("ERROR closing the current log file: " + err.message);
+            process.exit(1);
+        } 
+        uploadStream = null;
+        callback(err);
+    });
 }
 
 var writeQueue = async.queue(function (jsonContent, callback) {
@@ -83,10 +94,7 @@ var writeQueue = async.queue(function (jsonContent, callback) {
         function (callback) {
             if (uploadStream && lastRecordWritten) {
                 if (now.getHours() !== lastRecordWritten.getHours()) {
-                    uploadStream.end(null, null, function (err) {
-                        uploadStream = null;
-                        callback(null);
-                    });
+                    closeCurrentFile(callback);
                 } else {
                     callback(null);
                 }
@@ -125,27 +133,33 @@ process.once('SIGTERM', function () {
 
 var saveCurrentFileAndDisconnect = function (callback) {
 
-    var clientDisconnect = function (err) {
-        // the callback is not called if the client is not connected!
+    var clientDisconnect = function () {
         client.disconnect(err, function (err) {
-            (callback || function () { })(err);
+            if (err) {
+                console.log("ERROR disconnecting the client from NROD: " + err.message);
+                process.exit(1);
+            } 
+            (callback || function () { })(null);
         });
     }
 
     if (uploadStream) {
         uploadStream.end(null, null, function (err) {
-            clientDisconnect(err);
+            if (err) {
+                console.log("ERROR ending the upload stream to S3: " + err.message);
+                process.exit(1);
+            } 
+            clientDisconnect();
         });
     } else {
-        console.log("I am here 3");
-        clientDisconnect(null);
+        clientDisconnect();
     }
 }
 
 var run = function () {
     stompit.connect(CONNECTION_PARAMETERS, function (err, _client) {
         if (err) {
-            console.log("ERROR: " + err.message);
+            console.log("ERROR connecting to NROD: " + err.message);
             process.exit(1);
         } 
         client = _client;
@@ -154,7 +168,7 @@ var run = function () {
                 saveCurrentFileAndDisconnect(function () { 
                     // note I am ignoring the err returned from 
                     // saveCurrentFileAndDisconnect intentionally
-                    console.log("ERROR: " + err.message);
+                    console.log("ERROR subscribing to the feed: " + err.message);
                     process.exit(1);
                 });
             } else {
