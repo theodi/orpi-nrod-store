@@ -161,9 +161,20 @@ var run = function () {
                         JSON.parse(content)
                             .filter(function (message) {
                                 return (
-                                    (message.body.toc_id !== '0') &&
-                                    ((message.body.event_type === 'ARRIVAL') || 
-                                    (message.body.event_type === 'DEPARTURE'))
+                                    // Not a freight train
+                                    (message.body.toc_id !== '0') 
+                                    // See https://groups.google.com/d/msg/openraildata-talk/A-3pV_5ZfNc/EHwPu8v78WsJ .
+                                    // The two conditions below are necessary
+                                    // to identify real, in-service passengers 
+                                    // trains without matching the record
+                                    // against the schedule. This information is
+                                    // not in the NROD wiki!
+                                    && (message.header.source_system_id === 'TRUST')  
+                                    && _.contains(["1", "2", "9"], message.body.train_id.substring(2, 3))  
+                                    // Not interested in other events than
+                                    // departures and arrivals.
+                                    && ((message.body.event_type === 'ARRIVAL') 
+                                        || (message.body.event_type === 'DEPARTURE'))
                                 );
                             })
                             .forEach(function (message) {
