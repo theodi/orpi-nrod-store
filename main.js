@@ -170,7 +170,7 @@ var run = function () {
                                     // against the schedule. This information is
                                     // not in the NROD wiki!
                                     && (message.header.source_system_id === 'TRUST')  
-                                    && _.contains(["1", "2", "9"], message.body.train_id.substring(2, 3))  
+                                    && ("129".indexOf(message.body.train_id.substring(2, 3)) !== -1)  
                                     // Not interested in other events than
                                     // departures and arrivals.
                                     && ((message.body.event_type === 'ARRIVAL') 
