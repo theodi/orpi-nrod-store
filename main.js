@@ -85,7 +85,26 @@ var closeCurrentFile = function (callback) {
 }
 
 var writeQueue = async.queue(function (jsonContent, callback) {
-    var flattenedContent = flattenObject(jsonContent),
+
+    var dateToCSVDateWithoutSeconds = function (d) {
+        return d.getFullYear() + "/" + (d.getMonth() < 9 ? '0' : '') + (d.getMonth() + 1) + "/" + (d.getDate() < 10 ? '0' : '') + d.getDate() + " " + (d.getHours() < 10 ? '0' : '') + d.getHours() + ":" + (d.getMinutes() < 10 ? '0' : '') + d.getMinutes() + ":00";
+    }
+
+    var trasformContent = function (_flattenedEntry) {
+        // work on a clone!
+        var flattenedEntry = JSON.parse(JSON.stringify(_flattenedEntry));
+        // convert timestamps to CSV dates
+        _.keys(flattenedEntry)
+            .filter(function (key) { return key.match(/_timestamp$/); })
+            .filter(function (key) { return flattenedEntry[key] !== ""; })
+            .forEach(function (key) {
+                flattenedEntry[key] = new Date(parseInt(flattenedEntry[key]) + (new Date()).getTimezoneOffset() * 60000);
+                flattenedEntry[key] = dateToCSVDateWithoutSeconds(flattenedEntry[key]);
+            });
+        return flattenedEntry;
+    }
+
+    var flattenedContent = trasformContent(flattenObject(jsonContent)),
         sortedKeys = Object.keys(flattenedContent).sort(),
         sortedValues = sortedKeys.map(function (key) { return JSON.stringify(flattenedContent[key]); }).join(",");
         now = new Date();
@@ -212,4 +231,5 @@ var run = function () {
     });
 }
 
+// login fails if you try too soon after a previous disconnection
 setTimeout(run, 10000);
