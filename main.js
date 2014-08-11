@@ -153,7 +153,7 @@ process.once('SIGTERM', function () {
 var saveCurrentFileAndDisconnect = function (callback) {
 
     var clientDisconnect = function () {
-        client.disconnect(err, function (err) {
+        client.disconnect(function (err) {
             if (err) {
                 console.log("ERROR disconnecting the client from NROD: " + err.message);
                 process.exit(1);
